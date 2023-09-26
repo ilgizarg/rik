@@ -1,13 +1,9 @@
 import {stateInitial} from "../reducer";
-import {createFeatureSelector} from "@ngrx/store";
+import {createFeatureSelector, createSelector} from "@ngrx/store";
 
-export class AppState implements stateInitial{
-  loading = false;
-  userList = null;
-  backEndError = '';
-}
+export const userListFeatureSelector = createFeatureSelector<stateInitial>('userList')
 
-export const selectState = (state: AppState) => state;
-export const userListSelector = createFeatureSelector<AppState>('userList')
-export const loadingSelector = createFeatureSelector<AppState>('loading')
-export const backendErrorSelector = createFeatureSelector<AppState>('backEndError')
+export const userListSelector = createSelector(userListFeatureSelector, (userList: stateInitial) => userList.userList);
+export const loadingSelector = createSelector(userListFeatureSelector, (userList: stateInitial) => userList.loading);
+export const backEndErrorSelector = createSelector(userListFeatureSelector, (userList: stateInitial) => userList.backEndError);
+

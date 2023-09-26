@@ -9,6 +9,10 @@ import {UserEffect} from "./share/store/effect/user-effect";
 import {UserReducer} from "./share/store/reducer";
 import {HttpService} from "./share/service/http/http.service";
 import {HttpClientModule} from "@angular/common/http";
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import {MatButtonModule} from '@angular/material/button';
+import {MatTableModule} from '@angular/material/table';
 
 @NgModule({
   declarations: [
@@ -19,7 +23,12 @@ import {HttpClientModule} from "@angular/common/http";
     AppRoutingModule,
     HttpClientModule,
     StoreModule.forRoot({userList: UserReducer}, {}),
-    EffectsModule.forRoot([UserEffect])
+    EffectsModule.forRoot([UserEffect]),
+    BrowserAnimationsModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatButtonModule,
+    MatTableModule
   ],
   providers: [HttpService],
   bootstrap: [AppComponent]
