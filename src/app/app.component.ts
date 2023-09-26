@@ -1,12 +1,12 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {Store} from "@ngrx/store";
-import {DataSource} from '@angular/cdk/collections';
 import {UserAction} from "./share/store/action/user-action";
 import {Observable, ReplaySubject, map} from "rxjs";
 import { userListSelector } from './share/store/selectors/user-selector';
-import { UserListInterface } from './share/interface/user-list';
+import { userDataInterface, UserListInterface } from './share/interface/user-list';
 import { FormControl, FormGroup } from '@angular/forms';
-import { UserInterface } from './share/interface/user';
+import { UserTableInterface } from './share/interface/user';
+import { MatTable } from '@angular/material/table';
 
 @Component({
   selector: 'app-root',
@@ -21,7 +21,7 @@ export class AppComponent implements OnInit{
   userList$?: Observable<UserListInterface | null>;
   backendError$?: Observable<{} | null>;
   filterForms = new FormGroup({
-    login: new FormControl(''),
+    login: new FormControl('', ),
     phone: new FormControl(''),
     createAt: new FormControl(''),
     status: new FormControl(''),
@@ -30,9 +30,9 @@ export class AppComponent implements OnInit{
     modified: new FormControl(''),
   })
 
-  dataSource!:UserInterface[];
+  dataSource!:UserTableInterface[];
   displayedColumns: string[] = ['action', 'name','phone', 'createAt', 'modified', 'email', 'status', 'role', 'ecp'];
-
+  
   constructor(private readonly store: Store) {
    
   }
@@ -44,17 +44,25 @@ export class AppComponent implements OnInit{
   }
   
   initValues(): void {
-    this.userList$ = this.store.select(userListSelector).pipe(map(res=>{
+    this.store.select(userListSelector).pipe(map(res=>{
       console.log("RESPO", res);
-      return res
-    }))
-    this.userList$.subscribe((res)=>{
-      this.dataSource = res?.users!=null?res?.users:[];
+      //@ts-ignore
+      const data: UserTableInterface[] = [];
+      res?.users?.forEach((cu, i, a) => {
+        //@ts-ignore
+        const userDate:userDataInterface = res.data.find((x: userDataInterface) =>x.user_id==cu.id);
+        const item:UserTableInterface = {...cu, ...userDate};
+       data.push(item);
+     })
+     return data;
+    })).subscribe((res: UserTableInterface[])=>{
+       this.dataSource = res;
+      
     });
   }
 
   formSubmit(): void {
-    console.log('form submit');
+    console.log('form submit', this.filterForms.value);
   }
   
   formReset(): void {

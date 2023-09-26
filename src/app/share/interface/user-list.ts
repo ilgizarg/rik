@@ -14,6 +14,6 @@ export interface UserListInterface {
     size: number
   } | null,
   users: UserInterface[] | null ,
-  data: userDataInterface[] | null
+  data: userDataInterface[] 
 }
 
