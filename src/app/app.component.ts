@@ -6,7 +6,8 @@ import { userListSelector } from './share/store/selectors/user-selector';
 import { userDataInterface, UserListInterface } from './share/interface/user-list';
 import { FormControl, FormGroup } from '@angular/forms';
 import { UserTableInterface } from './share/interface/user';
-import { MatTable } from '@angular/material/table';
+import { MatTable, MatTableDataSource, MatTableDataSourcePaginator } from '@angular/material/table';
+import { DataSource } from '@angular/cdk/collections';
 
 @Component({
   selector: 'app-root',
@@ -21,7 +22,7 @@ export class AppComponent implements OnInit{
   userList$?: Observable<UserListInterface | null>;
   backendError$?: Observable<{} | null>;
   filterForms = new FormGroup({
-    login: new FormControl('', ),
+    name: new FormControl('', ),
     phone: new FormControl(''),
     createAt: new FormControl(''),
     status: new FormControl(''),
@@ -30,8 +31,9 @@ export class AppComponent implements OnInit{
     modified: new FormControl(''),
   })
 
-  dataSource!:UserTableInterface[];
+  dataSource!: UserTableInterface[];
   displayedColumns: string[] = ['action', 'name','phone', 'createAt', 'modified', 'email', 'status', 'role', 'ecp'];
+  
   
   constructor(private readonly store: Store) {
    
@@ -57,12 +59,32 @@ export class AppComponent implements OnInit{
      return data;
     })).subscribe((res: UserTableInterface[])=>{
        this.dataSource = res;
+       
+       
       
     });
   }
 
   formSubmit(): void {
     console.log('form submit', this.filterForms.value);
+    
+    const filterObject = Object.keys(this.filterForms.value).filter((c,i,a)=> {
+      return this.filterForms.get(c)?.value.trim()!==''?this.filterForms.get(c):null;
+      });
+    filterObject.forEach((c: string,i,a)=>{
+      console.log(this.filterForms.get(c)?.value.trim().toLowerCase());
+      this.dataSource = this.dataSource.filter((cc,i)=>{
+        console.log(c);
+        console.log(cc);
+        //@ts-ignore
+        console.log(cc[c]);
+        //@ts-ignore
+        return cc[c].toLowerCase().includes(this.filterForms.get(c)?.value.trim().toLowerCase())
+        
+      });
+    })
+    //const filterValue = (event.target as HTMLInputElement).value;
+    
   }
   
   formReset(): void {
